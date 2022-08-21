@@ -1,33 +1,24 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Car } from './interfaces/car.interface';
 import { v4 as uuid } from 'uuid';
 import { CreateCarDto, UpdateCarDto } from './dto';
 
 @Injectable()
 export class CarsService {
-  private cars: Car[] = [
-    {
-      id: uuid(),
-      brand: 'Sandero',
-    },
-    {
-      id: uuid(),
-      brand: 'Logan',
-    },
-    {
-      id: uuid(),
-      brand: 'Capture',
-    },
-  ];
+  private cars: Car[] = [];
 
   findAll() {
     return this.cars;
   }
 
   findOneById(id: string) {
-    const car = this.cars.find( car => car.id === id );
-    if ( !car ) throw new NotFoundException(`Car with id '${ id }' not found`);
-    
+    const car = this.cars.find((car) => car.id === id);
+    if (!car) throw new NotFoundException(`Car with id '${id}' not found`);
+
     return car;
   }
 
@@ -41,29 +32,32 @@ export class CarsService {
     return car;
   }
 
-  update( id: string, updateCarDto: UpdateCarDto ) {
+  update(id: string, updateCarDto: UpdateCarDto) {
+    let carDB = this.findOneById(id);
 
-    let carDB = this.findOneById( id );
-    
-    if( updateCarDto.id && updateCarDto.id !== id )
-        throw new BadRequestException(`Car id is not valid inside body`);
+    if (updateCarDto.id && updateCarDto.id !== id)
+      throw new BadRequestException(`Car id is not valid inside body`);
 
-    this.cars = this.cars.map( car => {
+    this.cars = this.cars.map((car) => {
+      if (car.id === id) {
+        carDB = { ...carDB, ...updateCarDto, id };
+        return carDB;
+      }
 
-        if ( car.id === id ) {
-            carDB = { ...carDB,...updateCarDto, id }
-            return carDB;
-        }
+      return car;
+    });
 
-        return car;
-    })
-    
     return carDB;
-}
+  }
 
   delete(id: string) {
     let carBD = this.findOneById(id);
-    this.cars = this.cars.filter( car => car.id !== carBD.id)
+    this.cars = this.cars.filter((car) => car.id !== carBD.id);
+  }
+
+  fillCarsWithSeedData( cars: Car[]) {
+
+    this.cars = [...cars]
 
   }
 }

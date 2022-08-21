@@ -29,20 +29,21 @@
 ## Installation
 
 ```bash
-$ npm install
+$ yarn install
 ```
 
 ## Running the app
 
 ```bash
-# development
-$ npm run start
-
 # watch mode
-$ npm run start:dev
+$ yarn start:dev
+```
 
-# production mode
-$ npm run start:prod
+## Populate Seed
+
+```bash
+# postman
+$ GET : localhost:3000/seed
 ```
 
 ## Test
